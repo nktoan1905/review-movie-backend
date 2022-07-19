@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "./../.env" });
 var axios = require("axios");
 var crypto = require("crypto");
-
+const { CREDENTIALS1 } = require("../config/config");
 var DB = require("./../DB");
 
 class Exception {
@@ -11,7 +11,7 @@ class Exception {
   }
 }
 
-var CREDENTIALS = JSON.parse(process.env.CREDENTIALS);
+var CREDENTIALS = JSON.parse(CREDENTIALS1);
 
 var scope = "https://www.googleapis.com/auth/userinfo.email";
 

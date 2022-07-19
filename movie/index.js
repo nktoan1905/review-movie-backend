@@ -1,5 +1,5 @@
 require("dotenv").config({ path: "./../.env" });
-
+const { TMDB } = require("../config/config");
 var axios = require("axios");
 
 var DB = require("./../DB");
@@ -119,11 +119,7 @@ class Movie {
   static async fetch(id) {
     try {
       var movie = await axios({
-        url:
-          "https://api.themoviedb.org/3/movie/" +
-          id +
-          "?api_key=" +
-          process.env.TMDB,
+        url: "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + TMDB,
         method: "GET",
       });
       return movie.data;
@@ -139,7 +135,7 @@ class Movie {
           "https://api.themoviedb.org/3/movie/" +
           id +
           "/credits?api_key=" +
-          process.env.TMDB,
+          TMDB,
         method: "GET",
       });
       return movie.data.cast.slice(0, 10);
