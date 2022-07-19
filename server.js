@@ -13,7 +13,7 @@ var People = require("./people");
 
 var app = express();
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "https://popcritic.web.app");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
   next();

@@ -66,7 +66,7 @@ class Auth {
   static async createUser(user) {
     var db = new DB();
     await db.query(
-      "INSERT INTO Users (user_id,join_date,authenticity,email,pic) VALUES ($1,current_timestamp,0,$2,$3) ON CONFLICT DO NOTHING;",
+      "INSERT INTO Users (user_id,join_date,authenticity,email,pic,role) VALUES ($1,current_timestamp,0,$2,$3,) ON CONFLICT DO NOTHING;",
       [user.id, user.email, user.picture]
     );
     var token = crypto.randomBytes(8).toString("hex");
