@@ -40,7 +40,7 @@ app.get("/callback", async function (req, res) {
     var access_token = await Auth.getAccessToken(req.query.code);
     var user = await Auth.getUser(access_token);
     var token = await Auth.createUser(user);
-    res.redirect(307, "https://popcritic.web.app/login?token=" + token);
+    res.redirect(307, "https://itss-group5-review-movie.herokuapp.com/login?token=" + token);
   } catch (e) {
     if (e instanceof Exception) res.status(e.code).end(e.message);
     else res.json(e);

@@ -28,7 +28,7 @@ class People {
   static async getReviews(id) {
     var db = new DB();
     var reviews = await db.query(
-      "SELECT user_id,pic,name,review_id,review_text,rating FROM Reviews NATURAL JOIN Users WHERE people_id=$1;",
+      "SELECT user_id,pic,name,review_id,review_text,rating FROM Reviews NATURAL JOIN Users  WHERE people_id=$1;",
       [id.toString()]
     );
     await db.end();
