@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "./../.env" });
 
 var axios = require("axios");
-const { TMDB } = require("../config/config");
+const {TMDB}  = require("../config/config");
 var DB = require("./../DB");
 
 class Exception {
