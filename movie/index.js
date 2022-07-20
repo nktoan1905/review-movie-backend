@@ -86,7 +86,7 @@ class Movie {
     await db.end();
     return true;
   }
-  static async addMovie(data) {
+  static async createMovie(data) {
     var movie = data.movie;
     var people = data.people;
     var db = new DB();
@@ -102,17 +102,57 @@ class Movie {
       ]
     );
     for (var people of cast) {
-      await People.add(
-        people.id,
-        people.name,
-        people.profile_path,
-        people.known_for_department
-      );
       await db.query(
         "INSERT INTO Casting (role,people_id,movie_id) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING;",
         [people.known_for_department, people.id, movie.id]
       );
     }
+    await db.end();
+    return true;
+  }
+  static async updateMovie(movie_id, data) {
+    var movie = data.movie;
+    var cast = data.people;
+    var db = new DB();
+    await db.query(
+      "UPDATE Movie SET title=$1, plot=$2, poster=$3, release_date=$4, imdb_id=$5 WHERE movie_id=$6 ",
+      [
+        movie.title,
+        movie.plot,
+        movie.poster,
+        movie.release_date,
+        movie.imdb_id,
+        movie_id.toString(),
+      ]
+    );
+    for (var people of cast) {
+      var checkPeople = await db.query(
+        "SELECT * FROM Casting NATURAL JOIN people WHERE movie_id=$1 AND people_id =$2 ",
+        [movie_id.toString(), people.people_id]
+      );
+      if (!checkPeople) {
+        await db.query(
+          "INSERT INTO Casting (role,people_id,movie_id) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING;",
+          [people.known_for_department, people.people_id, movie.id.toString()]
+        );
+      }
+    }
+    await db.end();
+    return true;
+  }
+  static async deletePeopleInMovie(people_id, movie_id) {
+    var db = new DB();
+    await db.query("DELETE FROM Casting WHERE people_id=$1 AND movie_id=$2", [
+      people_id,
+      movie_id,
+    ]);
+    await db.end();
+    return true;
+  }
+  static async deleteMovie(movie_id) {
+    var db = new DB();
+    await db.query("DELETE FROM Casting WHERE movie_id=$1", [movie_id.toString()]);
+    await db.query("DELETE FROM Movie WHERE movie_id=$1", [movie_id.toString()]);
     await db.end();
     return true;
   }
