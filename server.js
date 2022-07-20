@@ -284,6 +284,15 @@ app.get("/user/:id", async function (req, res) {
     res.status(e.code).end(e.message);
   }
 });
+app.get("/users", async function (req, res) {
+  var db = new DB();
+  try {
+    var user = await db.query("SELECT * FROM users");
+    res.json(user);
+  } catch (e) {
+    res.status(e.code).end(e.message);
+  }
+});
 
 app.get("/user/:id/reviews", async function (req, res) {
   try {
