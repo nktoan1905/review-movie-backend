@@ -161,9 +161,10 @@ class Movie {
   // }
   static async deleteMovie(movie_id) {
     var db = new DB();
-    console.log(movie_id)
+
     await db.query("DELETE FROM Casting WHERE movie_id=$1", [movie_id]);
     await db.query("DELETE FROM Movie WHERE movie_id=$1", [movie_id]);
+    console.log(movie_id);
     await db.end();
     return true;
   }

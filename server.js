@@ -139,7 +139,7 @@ app.delete("/movie/:id", async (req, res) => {
   try {
     if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");
     const status = await Movie.deleteMovie(req.params.id);
-    req.end(status);
+    req.json(status);
   } catch (e) {
     res.status(e);
   }
@@ -289,7 +289,33 @@ app.get("/user/:id/reviews", async function (req, res) {
     res.status(e.code).end(e.message);
   }
 });
+app.get("/search", async (req, res) => {
+  var db = new DB();
+  try {
+    var movie_title = req.query.title;
 
+    var movies = await db.query("SELECT * FROM movie where title LIKE $1", [
+      "%" + movie_title + "%",
+    ]);
+    await db.end();
+    res.json(movies.rows);
+  } catch (error) {
+    res.status(error);
+  }
+  // try {
+  //   // var movie_title = req.query.title;
+  //   // var query = "%" + movie_title + "%";
+  //   var movies = await db.query("SELECT * FORM MOVIE");
+  //   console.log(movies);
+  //   var data = movies.filter(function (item) {
+  //     return item.title.toLowerCase().indexOf(movie_title.toLowerCase()) !== -1;
+  //   });
+  //   await db.end();
+  //   res.json(data);
+  // } catch (e) {
+  //   res.status(e.code).end(e.message);
+  // }
+});
 app.post("/*", async function (req, res) {
   res.status(404).end("Not Found");
 });
