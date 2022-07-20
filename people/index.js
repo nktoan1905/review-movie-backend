@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "./../.env" });
 
 var axios = require("axios");
-const {TMDB}  = require("../config/config");
+const { TMDB } = require("../config/config");
 var DB = require("./../DB");
 
 class Exception {
@@ -24,7 +24,39 @@ class People {
       throw new Exception(400, "Person Doesn't Exist in Database");
     else return movie.rows[0];
   }
-
+  static async getAllPeople() {
+    var db = new DB();
+    var people = await db.query("SELECT * FROM People");
+    await db.end();
+    return people;
+  }
+  static async createPeople(name, image, profession) {
+    var db = new DB();
+    var id = 3;
+    await db.query(
+      "INSERT INTO People (people_id,name,image,profession) VALUES ($1,$2,$3,$4)",
+      [id.toString(), name, image, profession]
+    );
+    await db.end();
+    return true;
+  }
+  static async updatePeople(id, data) {
+    var db = new DB();
+    await db.query(
+      "UPDATE People SET name=$1, image=$2, profession=$3 WHERE people_id=$4",
+      [data.name, data.image, data.profession, id.toString()]
+    );
+    await db.end();
+    return true;
+  }
+  static async deletePeople(id) {
+    var db = new DB();
+    await db.query("DELETE FROM Reviews WHERE people_id=$1", [id.toString()]);
+    await db.query("DELETE FROM Casting WHERE people_id=$1", [id.toString()]);
+    await db.query("DELETE FROM People WHERE people_id=$1", [id.toString()]);
+    await db.end();
+    return true;
+  }
   static async getReviews(id) {
     var db = new DB();
     var reviews = await db.query(
@@ -64,15 +96,7 @@ class People {
     await db.end();
     return true;
   }
-  static async createPeople(id, name, image, profession) {
-    var db = new DB();
-    await db.query(
-      "INSERT INTO People (people_id,name,image,profession) VALUES ($1,$2,$3,$4)",
-      [id, name, image, profession]
-    );
-    await db.end();
-    return true;
-  }
+
   static async fetch(id) {
     try {
       var movie = await axios({

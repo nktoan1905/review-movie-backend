@@ -126,15 +126,6 @@ app.post("/movie/create", async function (req, res) {
   }
 });
 
-app.post("/people/create", async function (req, res) {
-  try {
-    const people = req.body;
-    console.log(people);
-    res.end("Done");
-  } catch (e) {
-    res.status(e.code).end(e.message);
-  }
-});
 app.get("/movie/:id/reviews", async function (req, res) {
   try {
     if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");
@@ -207,6 +198,48 @@ app.post("/people/:id/reviews", async function (req, res) {
     else res.json(e);
   }
 });
+
+app.get("/people", async (req, res) => {
+  try {
+    var people = await People.getAllPeople();
+    res.json(people.rows);
+  } catch (e) {
+    if (e instanceof Exception) res.status(e.code).end(e.message);
+    else res.json(e);
+  }
+});
+app.post("/people/create", async (req, res) => {
+  try {
+    var peopleData = req.body;
+    await People.createPeople(
+      peopleData.name,
+      peopleData.image,
+      peopleData.profession
+    );
+    res.end("Done");
+  } catch (e) {
+    res.status(e.code).end(e.message);
+  }
+});
+app.put("/people/:id", async (req, res) => {
+  try {
+    if (req.params.id.length == 0) throw new Exception(400, "Invalid User ID");
+    var data = req.body;
+    var status = await People.updatePeople(req.params.id, data);
+    res.end("Done");
+  } catch (e) {
+    res.status(e.code).end(e.message);
+  }
+});
+app.delete("/people/:id", async (req,res)=>{
+  try {
+    if (req.params.id.length == 0) throw new Exception(400, "Invalid User ID");
+    var status = await People.deletePeople(req.params.id);
+    res.end("Done");
+  } catch (error) {
+    res.status(e.code).end(e.message);
+  }
+})
 
 app.get("/user/:id", async function (req, res) {
   try {
