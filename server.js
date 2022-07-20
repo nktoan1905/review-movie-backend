@@ -93,7 +93,7 @@ app.get("/movies", async function (req, res) {
 app.post("/add/:id", async function (req, res) {
   try {
     if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");
-    await CAPTCHA.check(req);
+    // await CAPTCHA.check(req);
     await User.getID(req.header("token"));
     await Movie.add(req.params.id);
     res.end("Done");
@@ -174,7 +174,7 @@ app.post("/movie/:id/reviews", async function (req, res) {
   try {
     if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");
     if (!req.body.rating) throw new Exception(400, "Parameter Missing: rating");
-    await CAPTCHA.check(req);
+    // await CAPTCHA.check(req);
     var user_id = await User.getID(req.header("token"));
     await Movie.postReview(
       req.params.id,
@@ -218,7 +218,7 @@ app.post("/people/:id/reviews", async function (req, res) {
     if (req.params.id.length == 0)
       throw new Exception(400, "Invalid People ID");
     if (!req.body.rating) throw new Exception(400, "Parameter Missing: rating");
-    await CAPTCHA.check(req);
+    // await CAPTCHA.check(req);
     var user_id = await User.getID(req.header("token"));
     await People.postReview(
       req.params.id,
