@@ -1,5 +1,5 @@
 require("dotenv").config({ path: "./../.env" });
-
+var randomId = require("random-id");
 var axios = require("axios");
 const { TMDB } = require("../config/config");
 var DB = require("./../DB");
@@ -32,10 +32,12 @@ class People {
   }
   static async createPeople(name, image, profession) {
     var db = new DB();
-    var id = 3;
+    var len = 15;
+    var pattern = "aA0";
+    var id = randomId(len, pattern);
     await db.query(
       "INSERT INTO People (people_id,name,image,profession) VALUES ($1,$2,$3,$4)",
-      [id.toString(), name, image, profession]
+      [id, name, image, profession]
     );
     await db.end();
     return true;

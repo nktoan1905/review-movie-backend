@@ -118,48 +118,33 @@ app.get("/movie/:id", async function (req, res) {
 app.post("/movie/create", async function (req, res) {
   const data = req.body;
   try {
-    var movie = await Movie.addMovie(data);
-    res.end("Done");
+    var movie_id = await Movie.createMovie(data);
+    res.end(movie_id);
   } catch (e) {
-    res.status(e.code).end(e.message);
+    res.status(e);
   }
 });
-app.put("/movie/:id", async (req, res) => {
-  try {
-    if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");
-    var data = req.body;
-    var isUpdate = Movie.updateMovie(req.params.id, data);
-    req.end(isUpdate);
-  } catch (e) {
-    res.status(e.code).end(e.message);
-  }
-});
-app.delete("/movie/:id?delete-people=true", async (req, res) => {
-  var db = new DB();
-  try {
-    if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");
-    var people_id = req.body;
-    if (
-      await db.query("SELECT * FORM people WHERE people_id=$1", [people_id])
-    ) {
-      await Movie.deletePeopleInMovie(people_id, req.params.id);
-      req.end("Done");
-    } else {
-      req.end("Invalid casting in movie");
-    }
-  } catch (e) {
-    res.status(e.code).end(e.message);
-  }
-});
+// app.put("/movie/:id", async (req, res) => {
+//   try {
+//     if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");
+//     var data = req.body;
+//     var isUpdate = Movie.updateMovie(req.params.id, data);
+//     req.end(isUpdate);
+//   } catch (e) {
+//     res.status(e);
+//   }
+// });
+
 app.delete("/movie/:id", async (req, res) => {
   try {
     if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");
-    await Movie.deleteMovie(req.params.id);
-    req.end("Done");
+    const status = await Movie.deleteMovie(req.params.id);
+    req.end(status);
   } catch (e) {
-    res.status(e.code).end(e.message);
+    res.status(e);
   }
 });
+
 app.get("/movie/:id/reviews", async function (req, res) {
   try {
     if (req.params.id.length == 0) throw new Exception(400, "Invalid Movie ID");

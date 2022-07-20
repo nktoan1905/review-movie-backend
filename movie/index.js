@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "./../.env" });
 const { TMDB } = require("../config/config");
 var axios = require("axios");
-
+var randomId = require("random-id");
 var DB = require("./../DB");
 var People = require("./../people");
 
@@ -87,16 +87,25 @@ class Movie {
     return true;
   }
   static async createMovie(data) {
-    var movie = data.movie;
-    var people = data.people;
+    var len = 15;
+    var pattern = "aA0";
+    var id = randomId(len, pattern);
+    var movie = {
+      title: data.title,
+      plot: data.plot,
+      poster: data.poster,
+      release_date: data.release_date,
+      imdb_id: data.imdb_id,
+    };
+    var cast = data.cast;
     var db = new DB();
     await db.query(
       "INSERT INTO Movie (movie_id,title,plot,poster,release_date,imdb_id) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING;",
       [
-        movie.id,
-        movie.original_title,
-        movie.overview,
-        movie.poster_path,
+        id,
+        movie.title,
+        movie.plot,
+        movie.poster,
         movie.release_date,
         movie.imdb_id,
       ]
@@ -104,55 +113,57 @@ class Movie {
     for (var people of cast) {
       await db.query(
         "INSERT INTO Casting (role,people_id,movie_id) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING;",
-        [people.known_for_department, people.id, movie.id]
+        [people.known_for_department, people.people_id, id]
       );
     }
     await db.end();
-    return true;
+    return id;
   }
-  static async updateMovie(movie_id, data) {
-    var movie = data.movie;
-    var cast = data.people;
-    var db = new DB();
-    await db.query(
-      "UPDATE Movie SET title=$1, plot=$2, poster=$3, release_date=$4, imdb_id=$5 WHERE movie_id=$6 ",
-      [
-        movie.title,
-        movie.plot,
-        movie.poster,
-        movie.release_date,
-        movie.imdb_id,
-        movie_id.toString(),
-      ]
-    );
-    for (var people of cast) {
-      var checkPeople = await db.query(
-        "SELECT * FROM Casting NATURAL JOIN people WHERE movie_id=$1 AND people_id =$2 ",
-        [movie_id.toString(), people.people_id]
-      );
-      if (!checkPeople) {
-        await db.query(
-          "INSERT INTO Casting (role,people_id,movie_id) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING;",
-          [people.known_for_department, people.people_id, movie.id.toString()]
-        );
-      }
-    }
-    await db.end();
-    return true;
-  }
-  static async deletePeopleInMovie(people_id, movie_id) {
-    var db = new DB();
-    await db.query("DELETE FROM Casting WHERE people_id=$1 AND movie_id=$2", [
-      people_id,
-      movie_id,
-    ]);
-    await db.end();
-    return true;
-  }
+  // static async updateMovie(movie_id, data) {
+  //   var db = new DB();
+
+  //   var movie = {
+  //     title: data.title,
+  //     plot: data.plot,
+  //     poster: data.poster,
+  //     release_date: data.release_date,
+  //     imdb_id: data.imdb_id,
+  //   };
+  //   var cast = data.cast;
+
+  //   await db.query(
+  //     "UPDATE Movie SET title=$1, plot=$2, poster=$3, release_date=$4, imdb_id=$5 WHERE movie_id=$6;",
+  //     [
+  //       movie.title,
+  //       movie.plot,
+  //       movie.poster,
+  //       movie.release_date,
+  //       movie.imdb_id,
+  //       movie_id,
+  //     ]
+  //   );
+
+  //   for (var people of cast) {
+  //     var checkPeople = await db.query(
+  //       "SELECT * FROM Casting NATURAL JOIN people WHERE movie_id=$1 AND people_id =$2 ",
+  //       [movie_id, people.people_id]
+  //     );
+  //     console.log(checkPeople);
+  //     // if (!checkPeople) {
+  //     //   await db.query(
+  //     //     "INSERT INTO Casting (role,people_id,movie_id) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING;",
+  //     //     [people.known_for_department, people.people_id, movie_id]
+  //     //   );
+  //     // }
+  //   }
+  //   await db.end();
+  //   return true;
+  // }
   static async deleteMovie(movie_id) {
     var db = new DB();
-    await db.query("DELETE FROM Casting WHERE movie_id=$1", [movie_id.toString()]);
-    await db.query("DELETE FROM Movie WHERE movie_id=$1", [movie_id.toString()]);
+    console.log(movie_id)
+    await db.query("DELETE FROM Casting WHERE movie_id=$1", [movie_id]);
+    await db.query("DELETE FROM Movie WHERE movie_id=$1", [movie_id]);
     await db.end();
     return true;
   }
