@@ -230,12 +230,12 @@ app.get("/people", async (req, res) => {
 app.post("/people/create", async (req, res) => {
   try {
     var peopleData = req.body;
-    await People.createPeople(
+    var id = await People.createPeople(
       peopleData.name,
       peopleData.image,
       peopleData.profession
     );
-    res.end("Done");
+    res.json(id);
   } catch (e) {
     res.status(e.code).end(e.message);
   }
@@ -293,7 +293,7 @@ app.get("/search/:title", async (req, res) => {
   var db = new DB();
   try {
     var movie_title = req.params.title;
-    console.log(movie_title)
+    console.log(movie_title);
     var movies = await db.query("SELECT * FROM movie where title LIKE $1", [
       "%" + movie_title + "%",
     ]);

@@ -40,7 +40,7 @@ class People {
       [id, name, image, profession]
     );
     await db.end();
-    return true;
+    return id;
   }
   static async updatePeople(id, data) {
     var db = new DB();
