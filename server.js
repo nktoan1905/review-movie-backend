@@ -289,11 +289,11 @@ app.get("/user/:id/reviews", async function (req, res) {
     res.status(e.code).end(e.message);
   }
 });
-app.get("/search", async (req, res) => {
+app.get("/search/:title", async (req, res) => {
   var db = new DB();
   try {
-    var movie_title = req.query.title;
-
+    var movie_title = req.params.title;
+    console.log(movie_title)
     var movies = await db.query("SELECT * FROM movie where title LIKE $1", [
       "%" + movie_title + "%",
     ]);
@@ -302,19 +302,6 @@ app.get("/search", async (req, res) => {
   } catch (error) {
     res.status(error);
   }
-  // try {
-  //   // var movie_title = req.query.title;
-  //   // var query = "%" + movie_title + "%";
-  //   var movies = await db.query("SELECT * FORM MOVIE");
-  //   console.log(movies);
-  //   var data = movies.filter(function (item) {
-  //     return item.title.toLowerCase().indexOf(movie_title.toLowerCase()) !== -1;
-  //   });
-  //   await db.end();
-  //   res.json(data);
-  // } catch (e) {
-  //   res.status(e.code).end(e.message);
-  // }
 });
 app.post("/*", async function (req, res) {
   res.status(404).end("Not Found");
